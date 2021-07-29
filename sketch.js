@@ -32,19 +32,28 @@ function drawSpectrum() {
   cursorRadius = 60 + spectrum[100] * 0.3;
 
   if (spectrum[10] > 100) {
-    let red = map(spectrum[10] * random(3), 0, 300, 0, 255);
-    let green = map(spectrum[40] * random(3), 0, 300, 0, 255);
-    let blue = map(spectrum[26] * random(5), 0, 300, 0, 255);
+    let red = spectrum[20] * random(4);
+    let green = spectrum[50] * random(10);
+    let blue = spectrum[5] * random(4);
 
-    let bubble = {
+    var bubble = {
       x: random(windowWidth),
       y: random(windowHeight),
       r: random(60, 120),
+      rotateRadius: random(4),
       color: { red, green, blue },
-      speed: random(0.5, 2),
+      speed: random(0.01),
     };
 
     bubbles.push(bubble);
+  }
+}
+
+function drawRect() {
+  fill(10, 10, 10);
+
+  if (spectrum[40] > 90) {
+    rect(0, 0, windowWidth, windowHeight);
   }
 }
 
@@ -53,15 +62,29 @@ function draw() {
   cursor("none");
 
   drawSpectrum();
-
+  drawRect();
   bubbles.forEach((bubble) => {
     fill(bubble.color.red, bubble.color.green, bubble.color.blue);
     circle(bubble.x, bubble.y, lerp(0, bubble.r + spectrum[50], 0.4));
-    bubble.y -= 0.8 + spectrum[10] * 0.02 * bubble.speed;
-    bubble.x += bubble.speed;
+
+    bubble.x +=
+      Math.sin(Date.now() * bubble.speed) *
+      bubble.rotateRadius *
+      spectrum[40] *
+      0.08;
+    bubble.y +=
+      Math.cos(Date.now() * bubble.speed) * bubble.rotateRadius -
+      spectrum[20] * 0.05;
 
     if (bubble.y < -40) bubbles.splice(bubbles.indexOf(bubble), 1);
   });
+
+  for (let i = 0; i < 50; i++) {
+    let x = cursorX + Math.sin(Date.now() * 0.008) * 300;
+    let y = cursorY + Math.cos(Date.now() * 0.01) * 200;
+    fill("#f8f8f8");
+    circle(x, y, spectrum[20] * 0.3);
+  }
 
   drawCursor();
 }
